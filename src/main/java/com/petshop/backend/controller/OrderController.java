@@ -3,6 +3,8 @@ package com.petshop.backend.controller;
 import com.petshop.backend.dto.request.CreateOrderRequest;
 import com.petshop.backend.dto.response.OrderResponse;
 import com.petshop.backend.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/orders")
+@Tag(name = "Pedidos", description = "Creacion y consulta de pedidos del usuario autenticado")
+@SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
 	private final OrderService orderService;

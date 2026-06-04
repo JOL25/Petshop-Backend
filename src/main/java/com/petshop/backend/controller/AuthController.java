@@ -4,6 +4,7 @@ import com.petshop.backend.dto.request.LoginRequest;
 import com.petshop.backend.dto.request.RegisterAdminRequest;
 import com.petshop.backend.dto.response.AuthResponse;
 import com.petshop.backend.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "Inicio de sesion y registro inicial de administradores")
 public class AuthController {
 
 	private final AuthService authService;

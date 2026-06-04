@@ -3,6 +3,8 @@ package com.petshop.backend.controller;
 import com.petshop.backend.dto.request.CategoryRequest;
 import com.petshop.backend.dto.response.CategoryResponse;
 import com.petshop.backend.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/categories")
+@Tag(name = "Admin", description = "Administracion de categorias")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminCategoryController {
 
 	private final CategoryService categoryService;

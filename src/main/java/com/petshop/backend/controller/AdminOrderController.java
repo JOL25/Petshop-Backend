@@ -4,6 +4,8 @@ import com.petshop.backend.dto.request.UpdateOrderStatusRequest;
 import com.petshop.backend.dto.response.OrderResponse;
 import com.petshop.backend.entity.OrderStatus;
 import com.petshop.backend.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/orders")
+@Tag(name = "Admin", description = "Administracion de pedidos")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminOrderController {
 
 	private final OrderService orderService;

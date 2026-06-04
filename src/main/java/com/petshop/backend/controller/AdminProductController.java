@@ -3,6 +3,8 @@ package com.petshop.backend.controller;
 import com.petshop.backend.dto.request.ProductRequest;
 import com.petshop.backend.dto.response.ProductResponse;
 import com.petshop.backend.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/products")
+@Tag(name = "Admin", description = "Administracion de productos")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminProductController {
 
 	private final ProductService productService;
