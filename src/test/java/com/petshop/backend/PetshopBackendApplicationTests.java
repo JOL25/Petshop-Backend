@@ -1,6 +1,8 @@
 package com.petshop.backend;
 
 import com.petshop.backend.repository.UserRepository;
+import com.petshop.backend.repository.CategoryRepository;
+import com.petshop.backend.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -17,6 +19,12 @@ class PetshopBackendApplicationTests {
 
 	@MockitoBean
 	private UserRepository userRepository;
+
+	@MockitoBean
+	private ProductRepository productRepository;
+
+	@MockitoBean
+	private CategoryRepository categoryRepository;
 
 	@Test
 	void contextLoads() {
