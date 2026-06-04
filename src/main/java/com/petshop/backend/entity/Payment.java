@@ -45,6 +45,12 @@ public class Payment {
 	@Column(unique = true, length = 120)
 	private String providerPaymentId;
 
+	@Column(unique = true, length = 120)
+	private String providerPreferenceId;
+
+	@Column(length = 600)
+	private String checkoutUrl;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
 	private PaymentStatus status;
