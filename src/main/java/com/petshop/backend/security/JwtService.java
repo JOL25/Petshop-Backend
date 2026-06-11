@@ -2,8 +2,8 @@ package com.petshop.backend.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +20,13 @@ public class JwtService {
 			@Value("${app.jwt.secret}") String jwtSecret,
 			@Value("${app.jwt.expiration}") long jwtExpiration
 	) {
+		if (jwtExpiration <= 0) {
+			throw new IllegalArgumentException("JWT expiration must be greater than zero");
+		}
+
 		this.jwtSecret = jwtSecret;
 		this.jwtExpiration = jwtExpiration;
+		getSigningKey();
 	}
 
 	public String generateToken(UserDetails userDetails) {
@@ -58,12 +63,6 @@ public class JwtService {
 	}
 
 	private SecretKey getSigningKey() {
-		byte[] keyBytes;
-		try {
-			keyBytes = Decoders.BASE64.decode(jwtSecret);
-		} catch (IllegalArgumentException exception) {
-			keyBytes = jwtSecret.getBytes();
-		}
-		return Keys.hmacShaKeyFor(keyBytes);
+		return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
 	}
 }

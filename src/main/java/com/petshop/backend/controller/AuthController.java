@@ -4,6 +4,8 @@ import com.petshop.backend.dto.request.LoginRequest;
 import com.petshop.backend.dto.request.RegisterAdminRequest;
 import com.petshop.backend.dto.response.AuthResponse;
 import com.petshop.backend.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,11 @@ public class AuthController {
 	}
 
 	@PostMapping("/register-admin")
+	@Operation(
+			summary = "Registrar un administrador",
+			description = "Requiere un JWT perteneciente a un administrador.",
+			security = @SecurityRequirement(name = "bearerAuth")
+	)
 	public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody RegisterAdminRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerAdmin(request));
 	}
