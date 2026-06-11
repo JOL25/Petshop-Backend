@@ -1,7 +1,6 @@
 package com.petshop.backend.service;
 
 import com.petshop.backend.dto.request.CreatePaymentPreferenceRequest;
-import com.petshop.backend.dto.request.UpdateOrderStatusRequest;
 import com.petshop.backend.dto.response.PaymentPreferenceResponse;
 import com.petshop.backend.dto.response.PaymentResponse;
 import com.petshop.backend.entity.AppUser;
@@ -114,7 +113,7 @@ public class PaymentService {
 		paymentRepository.save(payment);
 
 		if (payment.getStatus() == PaymentStatus.APPROVED && order.getStatus() != OrderStatus.PAID) {
-			orderService.updateOrderStatus(orderId, new UpdateOrderStatusRequest(OrderStatus.PAID));
+			orderService.confirmPayment(orderId);
 		}
 	}
 

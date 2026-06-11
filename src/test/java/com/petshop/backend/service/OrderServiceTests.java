@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.petshop.backend.dto.request.CreateOrderRequest;
 import com.petshop.backend.dto.request.OrderItemRequest;
+import com.petshop.backend.dto.request.UpdateOrderStatusRequest;
 import com.petshop.backend.dto.response.OrderResponse;
 import com.petshop.backend.entity.AppUser;
 import com.petshop.backend.entity.OrderEntity;
@@ -93,6 +94,49 @@ class OrderServiceTests {
 
 		assertEquals("Insufficient stock for product: Alimento", exception.getMessage());
 		verify(orderRepository, never()).save(any(OrderEntity.class));
+	}
+
+	@Test
+	void rejectsPaidStatusFromAdministrativeFlow() {
+		BadRequestException exception = assertThrows(
+				BadRequestException.class,
+				() -> orderService.updateOrderStatus(
+						10L,
+						new UpdateOrderStatusRequest(OrderStatus.PAID)
+				)
+		);
+
+		assertEquals(
+				"Paid status can only be confirmed by the payment provider",
+				exception.getMessage()
+		);
+		verify(orderRepository, never()).findById(10L);
+	}
+
+	@Test
+	void confirmsPaymentAndDiscountsStockFromProviderFlow() {
+		Product product = product(1L, "Alimento", "25.50", 5);
+		OrderEntity order = OrderEntity.builder()
+				.id(10L)
+				.user(testUser())
+				.status(OrderStatus.PENDING)
+				.total(new BigDecimal("51.00"))
+				.build();
+		order.getItems().add(com.petshop.backend.entity.OrderItem.builder()
+				.order(order)
+				.product(product)
+				.quantity(2)
+				.unitPrice(new BigDecimal("25.50"))
+				.subtotal(new BigDecimal("51.00"))
+				.build());
+
+		when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
+		when(orderRepository.save(order)).thenReturn(order);
+
+		OrderResponse response = orderService.confirmPayment(10L);
+
+		assertEquals(OrderStatus.PAID, response.status());
+		assertEquals(3, product.getStock());
 	}
 
 	private AppUser testUser() {

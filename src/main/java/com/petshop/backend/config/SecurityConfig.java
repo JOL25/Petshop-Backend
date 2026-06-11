@@ -33,8 +33,15 @@ public class SecurityConfig {
 			JwtAuthenticationFilter jwtAuthenticationFilter,
 			@Value("${app.cors.allowed-origins:http://localhost:5173}") List<String> allowedOrigins
 	) {
+		if (allowedOrigins.stream().map(String::trim).anyMatch("*"::equals)) {
+			throw new IllegalArgumentException("CORS wildcard origin is not allowed");
+		}
+
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-		this.allowedOrigins = allowedOrigins;
+		this.allowedOrigins = allowedOrigins.stream()
+				.map(String::trim)
+				.filter(origin -> !origin.isEmpty())
+				.toList();
 	}
 
 	@Bean

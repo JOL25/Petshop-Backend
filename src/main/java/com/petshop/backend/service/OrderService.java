@@ -113,10 +113,22 @@ public class OrderService {
 
 	@Transactional
 	public OrderResponse updateOrderStatus(Long orderId, UpdateOrderStatusRequest request) {
+		if (request.status() == OrderStatus.PAID) {
+			throw new BadRequestException("Paid status can only be confirmed by the payment provider");
+		}
+
+		return changeOrderStatus(orderId, request.status());
+	}
+
+	@Transactional
+	public OrderResponse confirmPayment(Long orderId) {
+		return changeOrderStatus(orderId, OrderStatus.PAID);
+	}
+
+	private OrderResponse changeOrderStatus(Long orderId, OrderStatus nextStatus) {
 		OrderEntity order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 		OrderStatus previousStatus = order.getStatus();
-		OrderStatus nextStatus = request.status();
 
 		if (previousStatus == nextStatus) {
 			return toResponse(order);
