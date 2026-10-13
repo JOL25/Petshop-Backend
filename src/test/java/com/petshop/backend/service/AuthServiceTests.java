@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.petshop.backend.dto.request.LoginRequest;
+import com.petshop.backend.dto.request.RegisterClientRequest;
 import com.petshop.backend.dto.response.AuthResponse;
 import com.petshop.backend.entity.AppUser;
 import com.petshop.backend.entity.Role;
@@ -81,6 +82,40 @@ class AuthServiceTests {
 		assertEquals("signed-jwt", response.token());
 		assertEquals("Bearer", response.tokenType());
 		assertEquals("ADMIN", response.role());
+		assertEquals(request.email(), response.email());
+	}
+
+	@Test
+	void registerClientCreatesClientAndReturnsJwt() {
+		RegisterClientRequest request = new RegisterClientRequest(
+				"Cliente Triopi",
+				"cliente@petshop.com",
+				"SecurePassword123!"
+		);
+		AppUser savedUser = AppUser.builder()
+				.id(2L)
+				.name(request.name())
+				.email(request.email())
+				.password("bcrypt-hash")
+				.role(Role.CLIENT)
+				.enabled(true)
+				.build();
+		UserDetails userDetails = User.withUsername(request.email())
+				.password(savedUser.getPassword())
+				.roles("CLIENT")
+				.build();
+
+		when(userRepository.existsByEmail(request.email())).thenReturn(false);
+		when(passwordEncoder.encode(request.password())).thenReturn("bcrypt-hash");
+		when(userRepository.save(any(AppUser.class))).thenReturn(savedUser);
+		when(userDetailsService.loadUserByUsername(request.email())).thenReturn(userDetails);
+		when(jwtService.generateToken(userDetails)).thenReturn("client-jwt");
+
+		AuthResponse response = authService.registerClient(request);
+
+		verify(userRepository).save(any(AppUser.class));
+		assertEquals("client-jwt", response.token());
+		assertEquals("CLIENT", response.role());
 		assertEquals(request.email(), response.email());
 	}
 }

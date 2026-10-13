@@ -2,6 +2,7 @@ package com.petshop.backend.controller;
 
 import com.petshop.backend.dto.request.LoginRequest;
 import com.petshop.backend.dto.request.RegisterAdminRequest;
+import com.petshop.backend.dto.request.RegisterClientRequest;
 import com.petshop.backend.dto.response.AuthResponse;
 import com.petshop.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,12 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
 		return ResponseEntity.ok(authService.login(request));
+	}
+
+	@PostMapping("/register")
+	@Operation(summary = "Registrar un cliente", description = "Crea una cuenta de cliente e inicia sesion.")
+	public ResponseEntity<AuthResponse> registerClient(@Valid @RequestBody RegisterClientRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerClient(request));
 	}
 
 	@PostMapping("/register-admin")

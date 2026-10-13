@@ -51,7 +51,7 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/auth/login").permitAll()
+						.requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/auth/register-admin").hasRole(Role.ADMIN.name())
 						.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/payments/webhook").permitAll()

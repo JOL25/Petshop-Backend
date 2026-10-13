@@ -2,6 +2,7 @@ package com.petshop.backend.service;
 
 import com.petshop.backend.dto.request.LoginRequest;
 import com.petshop.backend.dto.request.RegisterAdminRequest;
+import com.petshop.backend.dto.request.RegisterClientRequest;
 import com.petshop.backend.dto.response.AuthResponse;
 import com.petshop.backend.entity.AppUser;
 import com.petshop.backend.entity.Role;
@@ -65,6 +66,27 @@ public class AuthService {
 				.email(request.email())
 				.password(passwordEncoder.encode(request.password()))
 				.role(Role.ADMIN)
+				.enabled(true)
+				.build();
+
+		AppUser savedUser = userRepository.save(user);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+		String token = jwtService.generateToken(userDetails);
+
+		return toAuthResponse(token, savedUser);
+	}
+
+	@Transactional
+	public AuthResponse registerClient(RegisterClientRequest request) {
+		if (userRepository.existsByEmail(request.email())) {
+			throw new BadRequestException("Email is already registered");
+		}
+
+		AppUser user = AppUser.builder()
+				.name(request.name())
+				.email(request.email())
+				.password(passwordEncoder.encode(request.password()))
+				.role(Role.CLIENT)
 				.enabled(true)
 				.build();
 
