@@ -2,8 +2,6 @@ package com.petshop.backend.service;
 
 import com.petshop.backend.dto.response.ImageUploadResponse;
 import com.petshop.backend.exception.BadRequestException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.Set;
 import java.util.UUID;
@@ -42,11 +40,10 @@ public class ProductImageStorageService {
 		validate(file);
 		String extension = extensionFor(file.getContentType());
 		String objectPath = "products/" + YearMonth.now() + "/" + UUID.randomUUID() + extension;
-		String encodedPath = URLEncoder.encode(objectPath, StandardCharsets.UTF_8).replace("+", "%20");
 
 		try {
 			restClient.post()
-					.uri(supabaseUrl + "/storage/v1/object/" + bucket + "/" + encodedPath)
+					.uri(supabaseUrl + "/storage/v1/object/" + bucket + "/" + objectPath)
 					.contentType(MediaType.parseMediaType(file.getContentType()))
 					.header("Authorization", "Bearer " + serviceRoleKey)
 					.header("apikey", serviceRoleKey)
