@@ -14,6 +14,7 @@ import com.petshop.backend.entity.Category;
 import com.petshop.backend.entity.Product;
 import com.petshop.backend.exception.BadRequestException;
 import com.petshop.backend.repository.CategoryRepository;
+import com.petshop.backend.repository.OrderItemRepository;
 import com.petshop.backend.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -32,11 +33,14 @@ class ProductServiceTests {
 	@Mock
 	private CategoryRepository categoryRepository;
 
+	@Mock
+	private OrderItemRepository orderItemRepository;
+
 	private ProductService productService;
 
 	@BeforeEach
 	void setUp() {
-		productService = new ProductService(productRepository, categoryRepository);
+		productService = new ProductService(productRepository, categoryRepository, orderItemRepository);
 	}
 
 	@Test
@@ -97,7 +101,7 @@ class ProductServiceTests {
 	}
 
 	@Test
-	void deactivatesActiveProduct() {
+	void deletesProductWithoutOrders() {
 		Product product = Product.builder()
 				.id(8L)
 				.name("Shampoo")
@@ -105,7 +109,24 @@ class ProductServiceTests {
 				.build();
 		when(productRepository.findById(8L)).thenReturn(Optional.of(product));
 
-		productService.deactivateProduct(8L);
+		when(orderItemRepository.existsByProductId(8L)).thenReturn(false);
+
+		productService.deleteProduct(8L);
+
+		verify(productRepository).delete(product);
+	}
+
+	@Test
+	void deactivatesProductWhenItBelongsToAnOrder() {
+		Product product = Product.builder()
+				.id(8L)
+				.name("Shampoo")
+				.active(true)
+				.build();
+		when(productRepository.findById(8L)).thenReturn(Optional.of(product));
+		when(orderItemRepository.existsByProductId(8L)).thenReturn(true);
+
+		productService.deleteProduct(8L);
 
 		assertFalse(product.getActive());
 		verify(productRepository).save(product);

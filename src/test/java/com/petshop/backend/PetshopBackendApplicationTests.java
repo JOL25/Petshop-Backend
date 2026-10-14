@@ -3,6 +3,7 @@ package com.petshop.backend;
 import com.petshop.backend.repository.UserRepository;
 import com.petshop.backend.repository.CategoryRepository;
 import com.petshop.backend.repository.OrderRepository;
+import com.petshop.backend.repository.OrderItemRepository;
 import com.petshop.backend.repository.PaymentRepository;
 import com.petshop.backend.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class PetshopBackendApplicationTests {
 
 	@MockitoBean
 	private OrderRepository orderRepository;
+
+	@MockitoBean
+	private OrderItemRepository orderItemRepository;
 
 	@MockitoBean
 	private PaymentRepository paymentRepository;

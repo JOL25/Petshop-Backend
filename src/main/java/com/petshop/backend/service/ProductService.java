@@ -7,6 +7,7 @@ import com.petshop.backend.entity.Product;
 import com.petshop.backend.exception.BadRequestException;
 import com.petshop.backend.exception.ResourceNotFoundException;
 import com.petshop.backend.repository.CategoryRepository;
+import com.petshop.backend.repository.OrderItemRepository;
 import com.petshop.backend.repository.ProductRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,16 @@ public class ProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
+	private final OrderItemRepository orderItemRepository;
 
-	public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+	public ProductService(
+			ProductRepository productRepository,
+			CategoryRepository categoryRepository,
+			OrderItemRepository orderItemRepository
+	) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
+		this.orderItemRepository = orderItemRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -86,16 +93,17 @@ public class ProductService {
 	}
 
 	@Transactional
-	public void deactivateProduct(Long id) {
+	public void deleteProduct(Long id) {
 		Product product = productRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-		if (!product.getActive()) {
-			throw new BadRequestException("Product is already inactive");
+		if (orderItemRepository.existsByProductId(id)) {
+			product.setActive(false);
+			productRepository.save(product);
+			return;
 		}
 
-		product.setActive(false);
-		productRepository.save(product);
+		productRepository.delete(product);
 	}
 
 	private Category getActiveCategory(Long categoryId) {

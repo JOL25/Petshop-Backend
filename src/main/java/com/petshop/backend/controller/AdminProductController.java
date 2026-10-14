@@ -49,8 +49,8 @@ public class AdminProductController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deactivateProduct(@PathVariable Long id) {
-		productService.deactivateProduct(id);
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+		productService.deleteProduct(id);
 		return ResponseEntity.noContent().build();
 	}
 }
